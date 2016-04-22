@@ -1,36 +1,30 @@
 {
-  "name": "momentjs",
-  "version": "1.1.6",
-  "description": "javascript 日期处理",
-  "main": "build/moment.js",
+  "name": "js-model",
+  "version": "1.0.6",
+  "description": "model for javascript",
+  "main": "build/model.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vvpvvp/momentjs.git"
+    "url": "git+https://github.com/vvpvvp/model.git"
   },
   "keywords": [
-    "moment",
-    "date"
+    "model",
+    "javascript",
+    "js"
   ],
   "author": {
     "name": "alias"
   },
   "license": "The MIT License",
-  "_npmUser": {
-    "name": "vvpvvp",
-    "email": "a8918929@sina.com.cn"
-  },
-  "dependencies": {},
   "bugs": {
-    "url": "https://github.com/vvpvvp/momentjs/issues"
+    "url": "https://github.com/vvpvvp/model/issues"
   },
   "scripts": {
-    "build": "babel --presets=es2015 ./moment.js -d build",
-    "min": "babel build/moment.js --minified --no-babelrc -o build/moment.min.js"
+    "build": "babel --presets=es2015 src -d build"
+  },
+  "dependencies": {
+    "momentjs": "^1.1.5"
   },
   "homepage": "https://github.com/vvpvvp/momentjs#readme",
-  "readmeFilename": "README.md",
-  "gitHead": "79f9fc223b1be7cfaf9604599e4c4d4a58aaa82c",
-  "_id": "momentjs@1.0.2",
-  "_shasum": "9754b13ea0cc0e0d144997802c30b1cabb9750f9",
-  "_from": "momentjs@>=1.0.2 <2.0.0"
+  "readmeFilename": "README.md"
 }
