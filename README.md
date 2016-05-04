@@ -1,6 +1,6 @@
 # model
-Model for javascript
-
+Model for javascript  
+![model](https://img.shields.io/badge/model-1.0.6-red.svg)
 
 ##Install
 ###npm install

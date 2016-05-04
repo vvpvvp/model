@@ -94,7 +94,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     function _parse_object(data, model, isParse) {
-        if (data === undefined) return null;
+        if (data === undefined) {
+            if (model.type == _type2.default.ARRAY) {
+                return [];
+            } else {
+                return null;
+            }
+        }
         var out_data = data;
         switch (model.type) {
             case _type2.default.OBJECT:

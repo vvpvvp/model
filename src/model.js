@@ -55,7 +55,13 @@ import moment from "momentjs";
     }
 
     function _parse_object(data, model, isParse) {
-        if (data === undefined) return null;
+        if (data === undefined){
+            if(model.type==TYPE.ARRAY){
+                return [];
+            }else{
+                return null;
+            }
+        }
         let out_data = data;
         switch (model.type) {
             case TYPE.OBJECT:
