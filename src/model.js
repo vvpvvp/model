@@ -54,11 +54,16 @@ import moment from "momentjs";
         return out_data;
     }
 
-    function _parse_object(data, model, isParse) {
+    function _parse_object(data, model, isParse,parentData) {
         if (data === undefined){
-            if(model.type==TYPE.ARRAY){
+            if(model.type==TYPE.ARRAY&&isParse){
                 return [];
-            }else{
+            }else if(!(model.type==TYPE.OBJECT&&isParse)){
+                if(model.default){
+                    return model.default;
+                }else if(Utils.isFunction(model.computed)){
+                    return model.computed.call(null,parentData);
+                }
                 return null;
             }
         }
@@ -68,7 +73,8 @@ import moment from "momentjs";
                 out_data = {};
                 if (isParse) {
                     for (let i of Object.keys(model.value)) {
-                        out_data[i] = _parse_object(data[i], model.value[i], isParse);
+                        data = data||{};
+                        out_data[i] = _parse_object(data[i], model.value[i], isParse, out_data);
                     }
                 } else {
                     for (let i of Object.keys(data)) {
@@ -125,6 +131,7 @@ import moment from "momentjs";
         } else {
             out_data = data;
         }
+
         return out_data;
     }
 

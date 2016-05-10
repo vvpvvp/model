@@ -93,11 +93,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return out_data;
     }
 
-    function _parse_object(data, model, isParse) {
+    function _parse_object(data, model, isParse, parentData) {
         if (data === undefined) {
-            if (model.type == _type2.default.ARRAY) {
+            if (model.type == _type2.default.ARRAY && isParse) {
                 return [];
-            } else {
+            } else if (!(model.type == _type2.default.OBJECT && isParse)) {
+                if (model.default) {
+                    return model.default;
+                } else if (_utils2.default.isFunction(model.computed)) {
+                    return model.computed.call(null, parentData);
+                }
                 return null;
             }
         }
@@ -114,7 +119,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         for (var _iterator2 = Object.keys(model.value)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                             var i = _step2.value;
 
-                            out_data[i] = _parse_object(data[i], model.value[i], isParse);
+                            data = data || {};
+                            out_data[i] = _parse_object(data[i], model.value[i], isParse, out_data);
                         }
                     } catch (err) {
                         _didIteratorError2 = true;
@@ -248,6 +254,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         } else {
             out_data = data;
         }
+
         return out_data;
     }
 

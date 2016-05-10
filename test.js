@@ -21,8 +21,17 @@ let Basic = new Model({
     "tags": [
         0
     ],
-    "companyId": "",
-    "rate": 0,
+    "companyId": {
+        type:Model.STRING,
+        default:"测试"
+    },
+    "rate": {
+        type:Model.NUMBER,
+        computed:function(data){
+            console.log(data);
+            return data.companyId+"raterate";
+        }
+    },
     "id": 0
 });
 
