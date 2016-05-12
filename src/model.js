@@ -54,15 +54,15 @@ import moment from "momentjs";
         return out_data;
     }
 
-    function _parse_object(data, model, isParse,parentData) {
-        if (data === undefined){
-            if(model.type==TYPE.ARRAY&&isParse){
+    function _parse_object(data, model, isParse, parentData) {
+        if (data === undefined || data === null) {
+            if (model.type == TYPE.ARRAY && isParse) {
                 return [];
-            }else if(!(model.type==TYPE.OBJECT&&isParse)){
-                if(model.default){
+            } else if (!(model.type == TYPE.OBJECT && isParse)) {
+                if (Utils.isFunction(model.computed)) {
+                    return model.computed.call(null, parentData);
+                } else if (model.default != undefined) {
                     return model.default;
-                }else if(Utils.isFunction(model.computed)){
-                    return model.computed.call(null,parentData);
                 }
                 return null;
             }
@@ -73,13 +73,18 @@ import moment from "momentjs";
                 out_data = {};
                 if (isParse) {
                     for (let i of Object.keys(model.value)) {
-                        data = data||{};
+                        data = data || {};
                         out_data[i] = _parse_object(data[i], model.value[i], isParse, out_data);
                     }
                 } else {
                     for (let i of Object.keys(data)) {
-                        if (model.value.hasOwnProperty(i))
-                            out_data[i] = _parse_object(data[i], model.value[i], isParse);
+                        if (model.value.hasOwnProperty(i)) {
+                            if (Utils.isFunction(model.computed)) {
+                                out_data[i] = model.computed.call(null, out_data);
+                            } else if (data[i] != undefined && data[i] != null) {
+                                out_data[i] = _parse_object(data[i], model.value[i], isParse);
+                            }
+                        }
                     }
                 }
                 break;
@@ -94,10 +99,11 @@ import moment from "momentjs";
                 break;
             case TYPE.DATE:
                 if (isParse) {
-                    out_data = {
-                        value: moment(data)
-                    }
-                    out_data.show = out_data.value.format();
+                    // out_data = {
+                    //     value: moment(data)
+                    // }
+                    // .show
+                    out_data = moment(data).format(model.format||"");
                 } else {
                     out_data = moment(data).toString();
                 }
@@ -106,15 +112,8 @@ import moment from "momentjs";
                 out_data = String(data);
 
         }
-        if (TYPE.isType(model.type) && isParse && model.format) {
-            if (TYPE.DATE === model.type && Utils.isString(model.format)) {
-                out_data.show = out_data.value.format(model.format);
-            } else if (Utils.isFunction(model.format)) {
-                out_data = {
-                    value: out_data,
-                    show: model.format.call(null, out_data)
-                }
-            }
+        if (TYPE.isType(model.type) && isParse && Utils.isFunction(model.format)) {
+            out_data = model.format.call(null, out_data);
         }
         return out_data;
     }

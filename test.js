@@ -11,8 +11,7 @@ const FORMAT = {
 
 let Basic = new Model({
     "source": {
-        type: Model.DATE,
-        format: FORMAT.LL
+        type: Model.DATE
     },
     "description": {
         type:Model.STRING,
@@ -28,8 +27,8 @@ let Basic = new Model({
     "rate": {
         type:Model.NUMBER,
         computed:function(data){
-            console.log(data);
-            return data.companyId+"raterate";
+            console.log(data.rateFrom);
+            return data.rateFrom+3;
         }
     },
     "id": 0
@@ -56,26 +55,20 @@ let User = new Model({
     "edu": [Edu]
 });
 
-console.log(User.parse(
-    {
-	    basic:{
-	        id:123123,
-	        source:"Tue Apr 19 2016 21:46:11 GMT+0800 (CST)",
-	        tags:[
-	            123,132
-	        ],
-	        description:"abcdefg"
-	    }
-	})
-);
+
+let value = User.parse({
+        basic:{
+            id:"123123",
+            source:"Tue Apr 19 2016 21:46:11 GMT+0800 (CST)",
+            tags:[
+                "12","32"
+            ],
+            rateFrom:1
+        }
+    });
+
+    console.log(value)
 console.log(User.dispose(
-    {
-	    basic:{
-	        id:"123123",
-	        source:"2013-04-09",
-	        tags:[
-	            "12","32"
-	        ]
-	    }
-	})
+    value
+    )
 );

@@ -94,14 +94,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     function _parse_object(data, model, isParse, parentData) {
-        if (data === undefined) {
+        if (data === undefined || data === null) {
             if (model.type == _type2.default.ARRAY && isParse) {
                 return [];
             } else if (!(model.type == _type2.default.OBJECT && isParse)) {
-                if (model.default) {
-                    return model.default;
-                } else if (_utils2.default.isFunction(model.computed)) {
+                if (_utils2.default.isFunction(model.computed)) {
                     return model.computed.call(null, parentData);
+                } else if (model.default != undefined) {
+                    return model.default;
                 }
                 return null;
             }
@@ -145,7 +145,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         for (var _iterator3 = Object.keys(data)[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                             var i = _step3.value;
 
-                            if (model.value.hasOwnProperty(i)) out_data[i] = _parse_object(data[i], model.value[i], isParse);
+                            if (model.value.hasOwnProperty(i)) {
+                                if (_utils2.default.isFunction(model.computed)) {
+                                    out_data[i] = model.computed.call(null, out_data);
+                                } else if (data[i] != undefined && data[i] != null) {
+                                    out_data[i] = _parse_object(data[i], model.value[i], isParse);
+                                }
+                            }
                         }
                     } catch (err) {
                         _didIteratorError3 = true;
@@ -196,10 +202,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 break;
             case _type2.default.DATE:
                 if (isParse) {
-                    out_data = {
-                        value: (0, _momentjs2.default)(data)
-                    };
-                    out_data.show = out_data.value.format();
+                    // out_data = {
+                    //     value: moment(data)
+                    // }
+                    // .show
+                    out_data = (0, _momentjs2.default)(data).format(model.format || "");
                 } else {
                     out_data = (0, _momentjs2.default)(data).toString();
                 }
@@ -208,15 +215,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 out_data = String(data);
 
         }
-        if (_type2.default.isType(model.type) && isParse && model.format) {
-            if (_type2.default.DATE === model.type && _utils2.default.isString(model.format)) {
-                out_data.show = out_data.value.format(model.format);
-            } else if (_utils2.default.isFunction(model.format)) {
-                out_data = {
-                    value: out_data,
-                    show: model.format.call(null, out_data)
-                };
-            }
+        if (_type2.default.isType(model.type) && isParse && _utils2.default.isFunction(model.format)) {
+            out_data = model.format.call(null, out_data);
         }
         return out_data;
     }
