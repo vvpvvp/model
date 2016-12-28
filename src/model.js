@@ -1,13 +1,13 @@
 import Utils from './utils';
 import TYPE from './type';
-import moment from 'momentjs';
+import manba from 'manba';
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-        typeof define === 'function' && define.amd ? define(factory) :
-        global.model = factory();
-}(global||window, function () {
+    typeof define === 'function' && define.amd ? define(factory) :
+    global.model = factory();
+}(this, function () {
   function analysis(data) {
-    const out_data = {};
+    const outData = {};
     if (Utils.isArray(data)) {
       if (data.length == 0) {
         return null;
@@ -17,43 +17,43 @@ import moment from 'momentjs';
     } else {
       for (const i of Object.keys(data)) {
         const n = data[i];
-        out_data[i] = analysisObject(n);
+        outData[i] = analysisObject(n);
       }
-      return out_data;
+      return outData;
     }
   }
 
   function analysisObject(n) {
-    let out_data = null;
+    let outData = null;
     if (n instanceof Model) {
-      out_data = n._model;
+      outData = n._model;
     } else if (Utils.isArray(n)) {
-      out_data = {
+      outData = {
         type: TYPE.ARRAY,
         value: analysis(n),
       }
     } else if (Utils.isObject(n)) {
-            // 已配置规则
+      // 已配置规则
       if (n.type && TYPE.isType(n.type)) {
-        out_data = {};
-        Object.assign(out_data, n);
+        outData = {};
+        Object.assign(outData, n);
       } else {
-                // 嵌套数据
-        out_data = {
+        // 嵌套数据
+        outData = {
           type: TYPE.OBJECT,
           value: analysis(n),
         }
       }
     } else {
-      out_data = {
+      outData = {
         type: getType(n),
       }
     }
-    return out_data;
+    return outData;
   }
 
   function _parse_object(data, model, param) {
-        // isParse, parentData
+    // isParse, parentData
     if ((!param.isParse) && Utils.isFunction(model.computed)) {
       return model.computed.call(null, param.parentData);
     }
@@ -64,125 +64,126 @@ import moment from 'momentjs';
       if (model.type == TYPE.ARRAY && param.isParse) {
         return [];
       } else if (!(model.type == TYPE.OBJECT && param.isParse)) {
-        if (!param.notEmpty && model.default != undefined) {
+        if (!param.removeNull && model.default != undefined) {
           return model.default;
         }
         return null;
       }
     }
-    let out_data = data;
+    let outData = data;
     switch (model.type) {
-    case TYPE.OBJECT:
-      out_data = {};
-      const columns = 0;
-      if (param.isParse) {
-        const keys = Utils.mergeArray(Object.keys(model.value), data ? Object.keys(data) : []);
-        for (const i of keys) {
-          if (model.value.hasOwnProperty(i)) {
-            data = data || {};
-            param.parentData = out_data;
-            const _out = _parse_object(data[i], model.value[i], param);
-            if (param.notEmpty && (_out == undefined || _out == null || (Utils.isArray(_out) && _out.length == 0))) {
-              continue;
-            } else {
-              out_data[i] = _out;
-            }
-          } else {
-            out_data[i] = Utils.deepCopy(data[i]);
-          }
-        }
-      } else {
-        for (const i of Object.keys(data)) {
-          if (model.value.hasOwnProperty(i)) {
-            param.parentData = out_data;
-            const d = _parse_object(data[i], model.value[i], param);
-            if (d != undefined && d != null) {
-              if (param.emptyArray && Utils.isArray(d) && d.length == 0) {
+      case TYPE.OBJECT:
+        outData = {};
+        const columns = 0;
+        if (param.isParse) {
+          const keys = Utils.mergeArray(Object.keys(model.value), data ? Object.keys(data) : []);
+          for (const i of keys) {
+            if (model.value.hasOwnProperty(i)) {
+              data = data || {};
+              param.parentData = outData;
+              const _out = _parse_object(data[i], model.value[i], param);
+              if (param.removeNull && (_out == undefined || _out == null || (Utils.isArray(_out) && _out.length == 0))) {
                 continue;
+              } else {
+                outData[i] = _out;
               }
-              out_data[i] = d;
+            } else {
+              outData[i] = Utils.deepCopy(data[i]);
+            }
+          }
+        } else {
+          for (const i of Object.keys(data)) {
+            if (model.value.hasOwnProperty(i)) {
+              param.parentData = outData;
+              const d = _parse_object(data[i], model.value[i], param);
+              if (d != undefined && d != null) {
+                if (param.removeEmptyArray && Utils.isArray(d) && d.length == 0) {
+                  continue;
+                }
+                outData[i] = d;
+              }
             }
           }
         }
-      }
-                // 依旧为空对象
-      if (Object.keys(out_data).length == 0)out_data = null;
-      break;
-    case TYPE.ARRAY:
-      out_data = [];
-      for (const n of data) {
-        const r = _parse_object(n, model.value, param);
-        if (!(param.removeNullFromArray && r == null))
-                        { out_data.push(r); }
-      }
-      break;
-    case TYPE.NUMBER:
-      if (Utils.isString(data) && data == '') {
-        out_data = null;
-      } else {
-        out_data = Number(data);
-      }
-      break;
-    case TYPE.DATE:
-      if (Utils.isString(data) && data == '') {
-        out_data = null;
-      } else if (!data) {
-        out_data = null;
-      } else if (param.isParse) {
-                        // out_data = {
-                        //     value: moment(data)
-                        // }
-                        // .show
-        out_data = moment(data).format(model.format || '');
-      } else {
-        out_data = moment(data).toISOString();
-      }
-      break;
-    case TYPE.BOOLEAN:
-      if (data === true || data == 'true') {
-        out_data = true;
-      } else if (data === false || data == 'false') {
-        out_data = false;
-      } else {
-        out_data = null;
-      }
-      break;
-    case TYPE.STRING:
-      out_data = String(data);
+        // 依旧为空对象
+        if (Object.keys(outData).length == 0) outData = null;
+        break;
+      case TYPE.ARRAY:
+        outData = [];
+        for (const n of data) {
+          const r = _parse_object(n, model.value, param);
+          if (!(param.removeNullFromArray && r == null)) { outData.push(r); }
+        }
+        break;
+      case TYPE.NUMBER:
+        if (Utils.isString(data) && data == '') {
+          outData = null;
+        } else {
+          outData = Number(data);
+          if (model.unit) {
+            if (param.isParse) {
+              outData = outData / model.unit;
+            } else {
+              outData = outData * model.unit;
+            }
+          }
+        }
+        break;
+      case TYPE.DATE:
+        if (Utils.isString(data) && data == '') {
+          outData = null;
+        } else if (!data) {
+          outData = null;
+        } else if (param.isParse) {
+          outData = manba(data).format(model.format || '');
+        } else {
+          outData = manba(data).toISOString();
+        }
+        break;
+      case TYPE.BOOLEAN:
+        if (data === true || data == 'true') {
+          outData = true;
+        } else if (data === false || data == 'false') {
+          outData = false;
+        } else {
+          outData = null;
+        }
+        break;
+      case TYPE.STRING:
+        outData = String(data);
 
     }
-    if (TYPE.isType(model.type) && param.isParse && Utils.isFunction(model.format) && out_data) {
-      out_data = model.format.call(null, out_data);
+    if (TYPE.isType(model.type) && param.isParse && Utils.isFunction(model.format) && outData) {
+      outData = model.format.call(null, outData);
     }
-        // dispose 的时候 如果为"",则输出null
-    if (!param.isParse && param.setEmptyNull && Utils.isString(out_data) && out_data == '') {
-      out_data = null;
+    // dispose 的时候 如果为"",则输出null
+    if (!param.isParse && param.setEmptyNull && Utils.isString(outData) && outData == '') {
+      outData = null;
     }
-    return out_data;
+    return outData;
   }
 
   function _parse(data, model, param) {
-    let out_data = null;
+    let outData = null;
     if (Utils.isArray(data)) {
-      out_data = [];
+      outData = [];
       for (const n of data) {
-        out_data.push(_parse_object(n, model, param));
+        outData.push(_parse_object(n, model, param));
       }
     } else if (Utils.isObject(data)) {
-      out_data = _parse_object(data, model, param);
-      if (out_data == null) {
+      outData = _parse_object(data, model, param);
+      if (outData == null) {
         return {};
       }
     } else {
-      out_data = data;
-      if (out_data == null) {
+      outData = data;
+      if (outData == null) {
         return [];
       }
     }
 
-    return out_data;
+    return outData;
   }
-
 
   function getType(date) {
     if (TYPE.isType(date)) {
@@ -197,6 +198,7 @@ import moment from 'momentjs';
     }
     return TYPE.STRING;
   }
+
   class Model {
     constructor(_model) {
       this._model = analysisObject(_model);
@@ -211,15 +213,19 @@ import moment from 'momentjs';
       param.isParse = false;
       return _parse(data, this._model, param);
     }
-    }
-
-    // data = User.parse(data);
-
-    // data = User.dispose(data);
+  }
 
   Model.DATE = TYPE.DATE;
   Model.NUMBER = TYPE.NUMBER;
   Model.STRING = TYPE.STRING;
   Model.BOOLEAN = TYPE.BOOLEAN;
+  Model.S = TYPE.S;
+  Model.B = TYPE.B;
+  Model.Q = TYPE.Q;
+  Model.W = TYPE.W;
+  Model.SW = TYPE.SW;
+  Model.BW = TYPE.BW;
+  Model.QW = TYPE.QW;
+  Model.Y = TYPE.Y;
   return Model;
 }));

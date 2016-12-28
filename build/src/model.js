@@ -12,9 +12,9 @@ var _type = require('./type');
 
 var _type2 = _interopRequireDefault(_type);
 
-var _momentjs = require('momentjs');
+var _manba = require('manba');
 
-var _momentjs2 = _interopRequireDefault(_momentjs);
+var _manba2 = _interopRequireDefault(_manba);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22,9 +22,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 (function (global, factory) {
   (typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? module.exports = factory() : typeof define === 'function' && define.amd ? define(factory) : global.model = factory();
-})(global || window, function () {
+})(undefined, function () {
   function analysis(data) {
-    var out_data = {};
+    var outData = {};
     if (_utils2.default.isArray(data)) {
       if (data.length == 0) {
         return null;
@@ -41,7 +41,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var i = _step.value;
 
           var n = data[i];
-          out_data[i] = analysisObject(n);
+          outData[i] = analysisObject(n);
         }
       } catch (err) {
         _didIteratorError = true;
@@ -58,37 +58,37 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
       }
 
-      return out_data;
+      return outData;
     }
   }
 
   function analysisObject(n) {
-    var out_data = null;
+    var outData = null;
     if (n instanceof Model) {
-      out_data = n._model;
+      outData = n._model;
     } else if (_utils2.default.isArray(n)) {
-      out_data = {
+      outData = {
         type: _type2.default.ARRAY,
         value: analysis(n)
       };
     } else if (_utils2.default.isObject(n)) {
       // 已配置规则
       if (n.type && _type2.default.isType(n.type)) {
-        out_data = {};
-        Object.assign(out_data, n);
+        outData = {};
+        Object.assign(outData, n);
       } else {
         // 嵌套数据
-        out_data = {
+        outData = {
           type: _type2.default.OBJECT,
           value: analysis(n)
         };
       }
     } else {
-      out_data = {
+      outData = {
         type: getType(n)
       };
     }
-    return out_data;
+    return outData;
   }
 
   function _parse_object(data, model, param) {
@@ -103,16 +103,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       if (model.type == _type2.default.ARRAY && param.isParse) {
         return [];
       } else if (!(model.type == _type2.default.OBJECT && param.isParse)) {
-        if (!param.notEmpty && model.default != undefined) {
+        if (!param.removeNull && model.default != undefined) {
           return model.default;
         }
         return null;
       }
     }
-    var out_data = data;
+    var outData = data;
     switch (model.type) {
       case _type2.default.OBJECT:
-        out_data = {};
+        outData = {};
         var columns = 0;
         if (param.isParse) {
           var keys = _utils2.default.mergeArray(Object.keys(model.value), data ? Object.keys(data) : []);
@@ -126,15 +126,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
               if (model.value.hasOwnProperty(i)) {
                 data = data || {};
-                param.parentData = out_data;
+                param.parentData = outData;
                 var _out = _parse_object(data[i], model.value[i], param);
-                if (param.notEmpty && (_out == undefined || _out == null || _utils2.default.isArray(_out) && _out.length == 0)) {
+                if (param.removeNull && (_out == undefined || _out == null || _utils2.default.isArray(_out) && _out.length == 0)) {
                   continue;
                 } else {
-                  out_data[i] = _out;
+                  outData[i] = _out;
                 }
               } else {
-                out_data[i] = _utils2.default.deepCopy(data[i]);
+                outData[i] = _utils2.default.deepCopy(data[i]);
               }
             }
           } catch (err) {
@@ -161,13 +161,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               var i = _step3.value;
 
               if (model.value.hasOwnProperty(i)) {
-                param.parentData = out_data;
+                param.parentData = outData;
                 var d = _parse_object(data[i], model.value[i], param);
                 if (d != undefined && d != null) {
-                  if (param.emptyArray && _utils2.default.isArray(d) && d.length == 0) {
+                  if (param.removeEmptyArray && _utils2.default.isArray(d) && d.length == 0) {
                     continue;
                   }
-                  out_data[i] = d;
+                  outData[i] = d;
                 }
               }
             }
@@ -187,10 +187,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         }
         // 依旧为空对象
-        if (Object.keys(out_data).length == 0) out_data = null;
+        if (Object.keys(outData).length == 0) outData = null;
         break;
       case _type2.default.ARRAY:
-        out_data = [];
+        outData = [];
         var _iteratorNormalCompletion4 = true;
         var _didIteratorError4 = false;
         var _iteratorError4 = undefined;
@@ -201,7 +201,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             var r = _parse_object(n, model.value, param);
             if (!(param.removeNullFromArray && r == null)) {
-              out_data.push(r);
+              outData.push(r);
             }
           }
         } catch (err) {
@@ -222,53 +222,56 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         break;
       case _type2.default.NUMBER:
         if (_utils2.default.isString(data) && data == '') {
-          out_data = null;
+          outData = null;
         } else {
-          out_data = Number(data);
+          outData = Number(data);
+          if (model.unit) {
+            if (param.isParse) {
+              outData = outData / model.unit;
+            } else {
+              outData = outData * model.unit;
+            }
+          }
         }
         break;
       case _type2.default.DATE:
         if (_utils2.default.isString(data) && data == '') {
-          out_data = null;
+          outData = null;
         } else if (!data) {
-          out_data = null;
+          outData = null;
         } else if (param.isParse) {
-          // out_data = {
-          //     value: moment(data)
-          // }
-          // .show
-          out_data = (0, _momentjs2.default)(data).format(model.format || '');
+          outData = (0, _manba2.default)(data).format(model.format || '');
         } else {
-          out_data = (0, _momentjs2.default)(data).toISOString();
+          outData = (0, _manba2.default)(data).toISOString();
         }
         break;
       case _type2.default.BOOLEAN:
         if (data === true || data == 'true') {
-          out_data = true;
+          outData = true;
         } else if (data === false || data == 'false') {
-          out_data = false;
+          outData = false;
         } else {
-          out_data = null;
+          outData = null;
         }
         break;
       case _type2.default.STRING:
-        out_data = String(data);
+        outData = String(data);
 
     }
-    if (_type2.default.isType(model.type) && param.isParse && _utils2.default.isFunction(model.format) && out_data) {
-      out_data = model.format.call(null, out_data);
+    if (_type2.default.isType(model.type) && param.isParse && _utils2.default.isFunction(model.format) && outData) {
+      outData = model.format.call(null, outData);
     }
     // dispose 的时候 如果为"",则输出null
-    if (!param.isParse && param.setEmptyNull && _utils2.default.isString(out_data) && out_data == '') {
-      out_data = null;
+    if (!param.isParse && param.setEmptyNull && _utils2.default.isString(outData) && outData == '') {
+      outData = null;
     }
-    return out_data;
+    return outData;
   }
 
   function _parse(data, model, param) {
-    var out_data = null;
+    var outData = null;
     if (_utils2.default.isArray(data)) {
-      out_data = [];
+      outData = [];
       var _iteratorNormalCompletion5 = true;
       var _didIteratorError5 = false;
       var _iteratorError5 = undefined;
@@ -277,7 +280,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         for (var _iterator5 = data[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
           var n = _step5.value;
 
-          out_data.push(_parse_object(n, model, param));
+          outData.push(_parse_object(n, model, param));
         }
       } catch (err) {
         _didIteratorError5 = true;
@@ -294,18 +297,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
       }
     } else if (_utils2.default.isObject(data)) {
-      out_data = _parse_object(data, model, param);
-      if (out_data == null) {
+      outData = _parse_object(data, model, param);
+      if (outData == null) {
         return {};
       }
     } else {
-      out_data = data;
-      if (out_data == null) {
+      outData = data;
+      if (outData == null) {
         return [];
       }
     }
 
-    return out_data;
+    return outData;
   }
 
   function getType(date) {
@@ -350,13 +353,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     return Model;
   }();
 
-  // data = User.parse(data);
-
-  // data = User.dispose(data);
-
   Model.DATE = _type2.default.DATE;
   Model.NUMBER = _type2.default.NUMBER;
   Model.STRING = _type2.default.STRING;
   Model.BOOLEAN = _type2.default.BOOLEAN;
+  Model.S = _type2.default.S;
+  Model.B = _type2.default.B;
+  Model.Q = _type2.default.Q;
+  Model.W = _type2.default.W;
+  Model.SW = _type2.default.SW;
+  Model.BW = _type2.default.BW;
+  Model.QW = _type2.default.QW;
+  Model.Y = _type2.default.Y;
   return Model;
 });

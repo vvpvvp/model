@@ -1,8 +1,8 @@
 {
   "name": "js-model",
-  "version": "1.1.5",
+  "version": "1.1.9",
   "description": "model for javascript",
-  "main": "build/model.js",
+  "main": "build/src/model.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vvpvvp/model.git"
@@ -21,7 +21,8 @@
   },
   "scripts": {
       "build": "babel src/*.js -d build",
-      "min": "babel build/*.js --minified --no-babelrc -o build/*.min.js"
+      "min": "babel build/*.js --minified --no-babelrc -o build/*.min.js",
+      "test": "mocha --compilers js:babel-core/register ./test/*.js"
   },
   "babel": {
       "presets": ["es2015"]
