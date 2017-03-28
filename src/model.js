@@ -122,7 +122,7 @@ import manba from 'manba';
           outData = Number(data);
           if (model.unit) {
             if (param.isParse) {
-              outData = outData / model.unit;
+              outData = outData / model.unit, 3;
             } else {
               outData = outData * model.unit;
             }

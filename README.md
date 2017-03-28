@@ -2,30 +2,30 @@
 Model for javascript  
 ![model](https://img.shields.io/badge/model-1.0.6-red.svg)
 
-##Install
-###npm install
+## Install
+### npm install
 ```
 npm install js-model
 ```
 
-###Download
+### Download
 ```
 git clone https://github.com/vvpvvp/model
 ```
 
-##recommend
+## recommend
 - [momentjs](https://www.npmjs.com/package/momentjs): Date Format Plugin
 
-##Model
+## Model
 
-###Description:
+### Description:
 - ""||Model.STRING: **String**
 - 0||Model.NUMBER: **Number**
 - Model.DATE: **Date**，default format is momentjs().format()=>'YYYY-MM-DD'
 - []: **Array**, and the first element mean array's type
 - {}: **Object**
 
-###Format:
+### Format:
 - FORMAT.LL: It's a short format string, and the value will format by momentjs
 - Function: this property will be a object such as:
 ```javascript
@@ -35,7 +35,7 @@ git clone https://github.com/vvpvvp/model
 }
 ```
 
-###function
+### function
 
 - **parse**:   
     Parse object or array translate to a standard data for use in template.  
@@ -45,7 +45,7 @@ git clone https://github.com/vvpvvp/model
     It will not add the other property to the data, and translate some string to date or number.
     For example: "2012-01-23" => "Mon Jan 23 2012 08:00:00 GMT+0800 (CST)"
 
-##Code
+## Code
 
 **format.js**
 ```javascript
