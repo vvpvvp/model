@@ -4,7 +4,7 @@ import manba from 'manba';
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
     typeof define === 'function' && define.amd ? define(factory) :
-    global.model = factory();
+    global.Model = factory();
 }(this, function () {
   function analysis(data) {
     const outData = {};
@@ -72,85 +72,85 @@ import manba from 'manba';
     }
     let outData = data;
     switch (model.type) {
-      case TYPE.OBJECT:
-        outData = {};
-        const columns = 0;
-        if (param.isParse) {
-          const keys = Utils.mergeArray(Object.keys(model.value), data ? Object.keys(data) : []);
-          for (const i of keys) {
-            if (model.value.hasOwnProperty(i)) {
-              data = data || {};
-              param.parentData = outData;
-              const _out = _parse_object(data[i], model.value[i], param);
-              if (param.removeNull && (_out == undefined || _out == null || (Utils.isArray(_out) && _out.length == 0))) {
+    case TYPE.OBJECT:
+      outData = {};
+      const columns = 0;
+      if (param.isParse) {
+        const keys = Utils.mergeArray(Object.keys(model.value), data ? Object.keys(data) : []);
+        for (const i of keys) {
+          if (model.value.hasOwnProperty(i)) {
+            data = data || {};
+            param.parentData = outData;
+            const _out = _parse_object(data[i], model.value[i], param);
+            if (param.removeNull && (_out == undefined || _out == null || (Utils.isArray(_out) && _out.length == 0))) {
+              continue;
+            } else {
+              outData[i] = _out;
+            }
+          } else {
+            outData[i] = Utils.deepCopy(data[i]);
+          }
+        }
+      } else {
+        for (const i of Object.keys(data)) {
+          if (model.value.hasOwnProperty(i)) {
+            param.parentData = outData;
+            const d = _parse_object(data[i], model.value[i], param);
+            if (d != undefined && d != null) {
+              if (param.removeEmptyArray && Utils.isArray(d) && d.length == 0) {
                 continue;
-              } else {
-                outData[i] = _out;
               }
-            } else {
-              outData[i] = Utils.deepCopy(data[i]);
-            }
-          }
-        } else {
-          for (const i of Object.keys(data)) {
-            if (model.value.hasOwnProperty(i)) {
-              param.parentData = outData;
-              const d = _parse_object(data[i], model.value[i], param);
-              if (d != undefined && d != null) {
-                if (param.removeEmptyArray && Utils.isArray(d) && d.length == 0) {
-                  continue;
-                }
-                outData[i] = d;
-              }
+              outData[i] = d;
             }
           }
         }
-        // 依旧为空对象
-        if (Object.keys(outData).length == 0) outData = null;
-        break;
-      case TYPE.ARRAY:
-        outData = [];
-        for (const n of data) {
-          const r = _parse_object(n, model.value, param);
-          if (!(param.removeNullFromArray && r == null)) { outData.push(r); }
-        }
-        break;
-      case TYPE.NUMBER:
-        if (Utils.isString(data) && data == '') {
-          outData = null;
-        } else {
-          outData = Number(data);
-          if (model.unit) {
-            if (param.isParse) {
-              outData = outData / model.unit, 3;
-            } else {
-              outData = outData * model.unit;
-            }
+      }
+      // 依旧为空对象
+      if (Object.keys(outData).length == 0) outData = null;
+      break;
+    case TYPE.ARRAY:
+      outData = [];
+      for (const n of data) {
+        const r = _parse_object(n, model.value, param);
+        if (!(param.removeNullFromArray && r == null)) { outData.push(r); }
+      }
+      break;
+    case TYPE.NUMBER:
+      if (Utils.isString(data) && data == '') {
+        outData = null;
+      } else {
+        outData = Number(data);
+        if (model.unit) {
+          if (param.isParse) {
+            outData = outData / model.unit, 3;
+          } else {
+            outData = outData * model.unit;
           }
         }
-        break;
-      case TYPE.DATE:
-        if (Utils.isString(data) && data == '') {
-          outData = null;
-        } else if (!data) {
-          outData = null;
-        } else if (param.isParse) {
-          outData = manba(data).format(model.format || '');
-        } else {
-          outData = manba(data).toISOString();
-        }
-        break;
-      case TYPE.BOOLEAN:
-        if (data === true || data == 'true') {
-          outData = true;
-        } else if (data === false || data == 'false') {
-          outData = false;
-        } else {
-          outData = null;
-        }
-        break;
-      case TYPE.STRING:
-        outData = String(data);
+      }
+      break;
+    case TYPE.DATE:
+      if (Utils.isString(data) && data == '') {
+        outData = null;
+      } else if (!data) {
+        outData = null;
+      } else if (param.isParse) {
+        outData = manba(data).format(model.format || '');
+      } else {
+        outData = manba(data).toISOString();
+      }
+      break;
+    case TYPE.BOOLEAN:
+      if (data === true || data == 'true') {
+        outData = true;
+      } else if (data === false || data == 'false') {
+        outData = false;
+      } else {
+        outData = null;
+      }
+      break;
+    case TYPE.STRING:
+      outData = String(data);
 
     }
     if (TYPE.isType(model.type) && param.isParse && Utils.isFunction(model.format) && outData) {

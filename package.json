@@ -1,8 +1,8 @@
 {
   "name": "js-model",
-  "version": "1.1.10",
+  "version": "1.1.12",
   "description": "model for javascript",
-  "main": "build/src/model.js",
+  "main": "build/model.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vvpvvp/model.git"
@@ -20,12 +20,12 @@
     "url": "https://github.com/vvpvvp/model/issues"
   },
   "scripts": {
-      "build": "babel src/*.js -d build",
-      "min": "babel build/*.js --minified --no-babelrc -o build/*.min.js",
-      "test": "mocha --compilers js:babel-core/register ./test/*.js"
+    "build": "babel src/*.js -d build",
+    "min": "babel build/*.js --minified --no-babelrc -o build/*.min.js",
+    "test": "mocha --compilers js:babel-core/register ./test/*.js"
   },
   "babel": {
-      "presets": ["es2015"]
+    "presets": ["es2015"]
   },
   "dependencies": {
     "manba": "^0.0.2"
