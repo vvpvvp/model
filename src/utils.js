@@ -38,6 +38,16 @@ export default {
     }
     return copyOne;
   },
+  deepFreeze(obj) {
+    const that = this;
+    Object.freeze(obj);
+    Object.keys(obj).forEach((key, value) => {
+      if (that.isObject(obj[key])) {
+        this.deepFreeze(obj[key]);
+      }
+    });
+    return obj;
+  },
   mergeArray(arr1, arr2) {
     for (var i = 0; i < arr1.length; i++) {
       for (let j = 0; j < arr2.length; j++) {

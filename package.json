@@ -1,6 +1,6 @@
 {
   "name": "js-model",
-  "version": "1.1.14",
+  "version": "1.1.15",
   "description": "model for javascript",
   "main": "build/model.js",
   "repository": {
@@ -28,7 +28,7 @@
     "presets": ["es2015"]
   },
   "dependencies": {
-    "manba": "^0.0.2"
+    "manba": "^0.0.19"
   },
   "homepage": "https://github.com/vvpvvp/momentjs#readme",
   "readmeFilename": "README.md"
