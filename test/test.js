@@ -1,5 +1,5 @@
-let Model = require("../build/model");
-// let Model = require("../src/model");
+// let Model = require("../build/model");
+let Model = require("../src/model");
 var expect = require('chai').expect;
 (function () {
   'use strict';
@@ -30,7 +30,6 @@ var expect = require('chai').expect;
     "rate": {
       type: Model.NUMBER,
       computed: function (data) {
-        console.log(data.rateFrom);
         return data.rateFrom + 3;
       }
     },
@@ -95,12 +94,20 @@ var expect = require('chai').expect;
         edu: [],
         basic: {
           companyId: '测试',
-          rate: NaN,
           id: 123123,
-          source: '2016-04-18T16:00:00.000Z',
+          rate: 4,
+          source: '2016-04-19T00:00:00+08:00',
           tags: [12, 32]
         }
       });
+    });
+
+    let Test = new Model({
+      id:0
+    });
+
+    it('dispose post data2', function () {
+      expect(Test.dispose([{id:null}])).to.be.deep.equal([{}]);
     });
   });
 

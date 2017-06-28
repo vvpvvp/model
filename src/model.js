@@ -59,10 +59,10 @@ function analysisObject(n) {
   return outData;
 }
 
-function _parse_object(data, model, param) {
+function parseObject(data, model, param, parent) {
   // isParse, parentData
   if ((!param.isParse) && Utils.isFunction(model.computed)) {
-    return model.computed.call(null, param.parentData);
+    return model.computed.call(null, parent);
   }
   if (param.isParse && Utils.isFunction(model.parse)) {
     return model.parse.call(null, data);
@@ -87,8 +87,7 @@ function _parse_object(data, model, param) {
       for (const i of keys) {
         if (model.value.hasOwnProperty(i)) {
           data = data || {};
-          param.parentData = outData;
-          const _out = _parse_object(data[i], model.value[i], param);
+          const _out = parseObject(data[i], model.value[i], param, data);
           if (param.removeNull && (_out == undefined || _out == null || (Utils.isArray(_out) && _out.length == 0))) {
             continue;
           } else {
@@ -101,8 +100,7 @@ function _parse_object(data, model, param) {
     } else {
       for (const i of Object.keys(data)) {
         if (model.value.hasOwnProperty(i)) {
-          param.parentData = outData;
-          const d = _parse_object(data[i], model.value[i], param);
+          const d = parseObject(data[i], model.value[i], param, data);
           if (d != undefined && d != null) {
             if (param.removeEmptyArray && Utils.isArray(d) && d.length == 0) {
               continue;
@@ -113,12 +111,12 @@ function _parse_object(data, model, param) {
       }
     }
     // 依旧为空对象
-    if (Object.keys(outData).length == 0 && param.removeEmptyObject && !Utils.isArray(param.parentData)) outData = null;
+    if (Object.keys(outData).length == 0 && param.removeEmptyObject && !Utils.isArray(parent)) outData = null;
     break;
   case TYPE.ARRAY:
     outData = [];
     for (const n of data) {
-      const r = _parse_object(n, model.value, param);
+      const r = parseObject(n, model.value, param, data);
       if (!(param.removeNullFromArray && r == null)) { outData.push(r); }
     }
     break;
@@ -175,10 +173,10 @@ function _parse(data, model, param) {
   if (Utils.isArray(data)) {
     outData = [];
     for (const n of data) {
-      outData.push(_parse_object(n, model, param));
+      outData.push(parseObject(n, model, param, data));
     }
   } else if (Utils.isObject(data)) {
-    outData = _parse_object(data, model, param);
+    outData = parseObject(data, model, param);
     if (outData == null) {
       return {};
     }

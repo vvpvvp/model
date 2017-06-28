@@ -1,31 +1,25 @@
-# model
-Model for javascript  
-![model](https://img.shields.io/badge/model-1.0.6-red.svg)
+# Model
+Model for javascript
 
 ## Install
 ### npm install
-```
+```sh
 npm install js-model
 ```
 
-### Download
-```
-git clone https://github.com/vvpvvp/model
-```
-
-## recommend
+## Recommend
 - [momentjs](https://www.npmjs.com/package/momentjs): Date Format Plugin
 
 ## Model
 
-### Description:
-- ""||Model.STRING: **String**
-- 0||Model.NUMBER: **Number**
-- Model.DATE: **Date**，default format is momentjs().format()=>'YYYY-MM-DD'
-- []: **Array**, and the first element mean array's type
+### 字段定义:
+- "": **String**
+- 0: **Number**
+- Model.DATE: **Date**
+- []: **Array**
 - {}: **Object**
 
-### Function
+### 方法
 
 - **parse**:   
     当数据从后台传输过来的时候，日期是时间戳，金额是以元为单位，数据是不全的，因为只传递了有值的数据。  
@@ -37,6 +31,22 @@ git clone https://github.com/vvpvvp/model
     当你需要把数据传送至后台之前，把日期转换成时间戳，把金额转换为以元为单位的数额，标准化数据格式，删除为空的数据。
 
     例：通过input修改的数值为String, 通过dispose转换成数字格式。
+
+
+## Default Param
+
+```javascript
+{
+  //dispose的时候移除空数组
+  removeEmptyArray: false,
+  //parse的时候移除null数据
+  removeNull: false,
+  //移除null数据从数组中
+  removeNullFromArray: false,
+  //从子对象中移除空对象
+  removeEmptyObject: true,
+}
+```
 
 ## Const
 
