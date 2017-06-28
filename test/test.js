@@ -1,4 +1,5 @@
-let Model = require("../src/model");
+let Model = require("../build/model");
+// let Model = require("../src/model");
 var expect = require('chai').expect;
 (function () {
   'use strict';

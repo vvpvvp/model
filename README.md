@@ -25,38 +25,50 @@ git clone https://github.com/vvpvvp/model
 - []: **Array**, and the first element mean array's type
 - {}: **Object**
 
-### Format:
-- FORMAT.LL: It's a short format string, and the value will format by momentjs
-- Function: this property will be a object such as:
-```javascript
-{
-    value:0,
-    show:"本科"
-}
-```
-
-### function
+### Function
 
 - **parse**:   
-    Parse object or array translate to a standard data for use in template.  
-    It will add the missing property to data, and according the model define add the show property. 
-- **dispose**:  
-    Parse object or array data to a standard data for submit to server.  
-    It will not add the other property to the data, and translate some string to date or number.
-    For example: "2012-01-23" => "Mon Jan 23 2012 08:00:00 GMT+0800 (CST)"
+    当数据从后台传输过来的时候，日期是时间戳，金额是以元为单位，数据是不全的，因为只传递了有值的数据。  
+    parse方法是帮你转换时间戳至时间字符串，金额以一定单位转换好，并帮你补全好所有的字段。  
 
+    补全了所有数据，让你摆脱{{a&&a.b&&a.c?a.b.c:''}}这种无聊的判断了  
+
+- **dispose**:  
+    当你需要把数据传送至后台之前，把日期转换成时间戳，把金额转换为以元为单位的数额，标准化数据格式，删除为空的数据。
+
+    例：通过input修改的数值为String, 通过dispose转换成数字格式。
+
+## Const
+
+```javascript
+
+  Model.DATE // date format
+  Model.NUMBER //number format
+  Model.STRING //string format
+  Model.BOOLEAN //boolean format
+  Model.S // money ten 十
+  Model.B // money hundred 百
+  Model.Q // money thousand 千
+  Model.W //money ten thousand 万
+  Model.SW // money one hundred thousand 十万
+  Model.BW // money million 百万
+  Model.QW // money ten million 千万
+  Model.Y // money billion 亿
+```
 ## Code
 
 **format.js**
 ```javascript
 
+// manba
 // "l": "YYYY-MM-DD",
 // "ll": "YYYY年MM月DD日",
 // "k": "YYYY-MM-DD hh:mm",
 const FORMAT = {
-    L: "l",
+    DAY: "l",
     LL: "ll",
-    KK: "k",
+    MINUTE: "k",
+    MONTH: 'YYYY-MM',
     GET:function(data){
         return "get"+data;
     }
@@ -72,17 +84,18 @@ import Model from "js-model";
 let Basic = new Model({
     "source": {
         type: Model.DATE,
-        format: FORMAT.LL
+        format: FORMAT.DAY
     },
-    "description": {
-        type:Model.STRING,
-        format: FORMAT.GET
-    },
+    "description": '',
     "tags": [
         0
     ],
     "companyId": "",
     "rate": 0,
+    "salary": {
+        type: Model.NUMBER,
+        unit: Model.Q
+    },
     "id": 0
 });
 export default Basic;
@@ -90,17 +103,18 @@ export default Basic;
 
 **Edu.js**
 ```javascript
-import FORMAT from "./format";
-import Model from "js-model";
 let Edu = new Model({
     "startTime": {
         type: Model.DATE,
-        format: FORMAT.L
+        format: FORMAT.MINUTE
+    },
+    "endTime": {
+        type: Model.DATE,
+        format: FORMAT.MINUTE
     },
     "degree": 0,
     "major": "",
     "school": "",
-    "endTime": 0,
     "takeTime": "",
     "id": ""
 });
@@ -114,7 +128,6 @@ import Edu from "./Edu";
 import Basic from "./Basic";
 let User = new Model({
     "basic": Basic,
-    "bind": {},
     "edu": [Edu]
 });
 export default User;
@@ -124,44 +137,80 @@ export default User;
 **test.js**
 ```javascript
 import User from './User'
-console.log(User.parse(
-    {
-        basic:{
-            id:123123,
-            source:"Tue Apr 19 2016 21:46:11 GMT+0800 (CST)",
-            tags:[
-                123,132
-            ],
-            description:"abcdefg"
-        }
-    })
-);
-console.log(User.dispose(
-    {
-        basic:{
-            id:"123123",
-            source:"2013-04-09",
-            tags:[
-                "12","32"
-            ]
-        }
-    })
+console.log(User.parse({
+    basic:{
+        id:123123,
+        source: "Tue Apr 19 2016 21:46:11 GMT+0800 (CST)",
+        tags:[
+            "123", "132"
+        ],
+        description:"abcdefg",
+        salary:100000
+    },
+    edu:[{
+        "startTime": "Tue Apr 19 2016 21:46:11 GMT+0800 (CST)",
+        "takeTime": "",
+        "id": ""
+    }],
+}))
+console.log(User.dispose({
+    basic:{
+        id:123123,
+        source: "2017-06-09",
+        tags:[
+            123,132
+        ],
+        description:"abcdefg",
+        salary:100000
+    },
+    edu:[{
+        "startTime": "2017-06-10",
+        "id": ""
+    }],
+})
 );
 ```
 
 **result**:
 ```javascript
-{ basic: 
-   { source: { value: [Object], show: '2016年04月19日' },
-     description: { value: 'abcdefg', show: 'getabcdefg' },
-     tags: [ 123, 132 ],
-     companyId: null,
-     rate: null,
-     id: 123123 },
-  bind: null,
-  edu: null }
-{ basic: 
-   { id: 123123,
-     source: 'Tue Apr 09 2013 00:00:00 GMT+0800 (CST)',
-     tags: [ 12, 32 ] } }
+
+//parse
+{   
+    basic: {
+        companyId: null
+        description: "abcdefg"
+        id: 123123
+        rate: null
+        salary: 100
+        source: "2016-04-19",
+        tags: [123, 132]
+    },
+    edu: [
+        {
+            degree: null
+            endTime: null
+            id: null
+            major: null
+            school: null
+            startTime: "2016-04-19 21:46"
+            takeTime: null
+        }
+    ]
+}
+
+//dispose
+{   
+    basic: {
+        description: "abcdefg"
+        id: 123123
+        salary: 100000000
+        source: "2016-04-19T21:46:11+08:00"
+        tags: [123, 132]
+    },
+    edu: [
+        {
+            startTime: "2016-04-19T21:46:11+08:00"
+        }
+    ]
+}
 ```
