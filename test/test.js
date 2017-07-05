@@ -13,22 +13,20 @@ var expect = require('chai').expect;
   }
 
   let Basic = new Model({
-    "source": {
-      type: Model.DATE
-    },
+    "source": Date,
     "description": {
-      type: Model.STRING,
+      type: String,
       format: FORMAT.GET
     },
     "tags": [
       0
     ],
     "companyId": {
-      type: Model.STRING,
+      type: Model.String,
       default: "测试"
     },
     "rate": {
-      type: Model.NUMBER,
+      type: Model.Number,
       computed: function (data) {
         return data.rateFrom + 3;
       }
@@ -39,7 +37,7 @@ var expect = require('chai').expect;
 
   let Edu = new Model({
     "startTime": {
-      type: Model.DATE,
+      type: Date,
       format: FORMAT.L
     },
     "degree": 0,

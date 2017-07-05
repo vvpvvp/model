@@ -40,10 +40,11 @@ function analysisObject(n) {
       value: analysis(n),
     }
   } else if (Utils.isObject(n)) {
+    let type = getStaticType(n.type);
     // 已配置规则
-    if (n.type && TYPE.isType(n.type)) {
+    if (type) {
       outData = {};
-      Object.assign(outData, n);
+      Object.assign(outData, n, {type});
     } else {
       // 嵌套数据
       outData = {
@@ -202,16 +203,37 @@ function _parse(data, model, param) {
   return outData;
 }
 
-function getType(date) {
-  if (TYPE.isType(date)) {
-    return date;
+const getStaticType = function(data) {
+  if (data == null) {
+    return false;
   }
-  if (Utils.isNumber(date)) {
+  if (TYPE.isType(data)) {
+    return data;
+  }
+  if (data === Number) {
     return TYPE.NUMBER;
-  } else if (Utils.isString(date)) {
+  } else if (data === String) {
     return TYPE.STRING;
-  } else if (Utils.isBoolean(date)) {
+  } else if (data === Boolean) {
     return TYPE.BOOLEAN;
+  } else if (data === Date) {
+    return TYPE.DATE;
+  }
+  return false;
+}
+
+const getType = function(data) {
+  if (TYPE.isType(data)) {
+    return data;
+  }
+  if (Utils.isNumber(data) || data === Number) {
+    return TYPE.NUMBER;
+  } else if (Utils.isString(data) || data === String) {
+    return TYPE.STRING;
+  } else if (Utils.isBoolean(data) || data === Boolean) {
+    return TYPE.BOOLEAN;
+  } else if (data === Date) {
+    return TYPE.DATE;
   }
   return TYPE.STRING;
 }
@@ -236,6 +258,10 @@ Model.DATE = TYPE.DATE;
 Model.NUMBER = TYPE.NUMBER;
 Model.STRING = TYPE.STRING;
 Model.BOOLEAN = TYPE.BOOLEAN;
+Model.Date = TYPE.DATE;
+Model.Number = TYPE.NUMBER;
+Model.String = TYPE.STRING;
+Model.Boolean = TYPE.BOOLEAN;
 Model.S = TYPE.S;
 Model.B = TYPE.B;
 Model.Q = TYPE.Q;
