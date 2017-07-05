@@ -33,7 +33,7 @@ function analysis(data) {
 function analysisObject(n) {
   let outData = null;
   if (n instanceof Model) {
-    outData = n._model;
+    outData = n;
   } else if (Utils.isArray(n)) {
     outData = {
       type: TYPE.ARRAY,
@@ -60,6 +60,13 @@ function analysisObject(n) {
 }
 
 function parseObject(data, model, param, parent) {
+  if (model instanceof Model) {
+    if (param.isParse) {
+      return model.parse(data, param);
+    } else {
+      return model.dispose(data, param);
+    }
+  }
   // isParse, parentData
   if ((!param.isParse) && Utils.isFunction(model.computed)) {
     return model.computed.call(null, parent);
@@ -170,6 +177,14 @@ function parseObject(data, model, param, parent) {
 
 function _parse(data, model, param) {
   let outData = null;
+
+  if (data === null || data === undefined) {
+    if (param.isParse) {
+      data = {};
+    } else {
+      return null;
+    }
+  }
   if (Utils.isArray(data)) {
     outData = [];
     for (const n of data) {
@@ -182,9 +197,6 @@ function _parse(data, model, param) {
     }
   } else {
     outData = data;
-    if (outData == null) {
-      return [];
-    }
   }
 
   return outData;

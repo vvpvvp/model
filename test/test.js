@@ -88,6 +88,22 @@ var expect = require('chai').expect;
 
     });
 
+    it('parse empty value', function () {
+      expect(User.parse({})).to.be.deep.equal({
+        bind: null,
+        edu: [],
+        basic: {
+          description: null,
+          companyId: "测试",
+          rate: null,
+          id: null,
+          source: null,
+          tags: []
+        }
+      });
+
+    });
+
 
     it('dispose post data', function () {
       expect(User.dispose(value)).to.be.deep.equal({
