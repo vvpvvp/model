@@ -25,10 +25,12 @@
     "test": "mocha --compilers js:babel-core/register ./test/*.js"
   },
   "babel": {
-    "presets": ["es2015"]
+    "presets": [
+      "es2015"
+    ]
   },
   "dependencies": {
-    "manba": "^0.0.19"
+    "manba": "^1.0.1"
   },
   "homepage": "https://github.com/vvpvvp/momentjs#readme",
   "readmeFilename": "README.md"

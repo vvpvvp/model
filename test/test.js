@@ -116,13 +116,35 @@ var expect = require('chai').expect;
       });
     });
 
-    let Test = new Model({
-      id:0
-    });
 
     it('dispose post data2', function () {
+      let Test = new Model({
+        id:0
+      });
       expect(Test.dispose([{id:null}])).to.be.deep.equal([{}]);
     });
+
+    
+
+    it('disposeDateFormat', function () {
+      let Test1 = new Model({
+        source: Model.DATE
+      });
+
+      Model.config({
+        disposeDateFormat(date) {
+          return new Date(date).getTime();
+        }
+      })
+      expect(Test1.dispose({
+        source: '2016-04-19'
+      })).to.be.deep.equal({
+        source: 1461024000000
+      });
+
+    });
+
+
   });
 
 }());

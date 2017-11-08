@@ -270,12 +270,13 @@ Model.SW = TYPE.SW;
 Model.BW = TYPE.BW;
 Model.QW = TYPE.QW;
 Model.Y = TYPE.Y;
+
 Model.disposeDateFormat = (str) => {
   return manba(str).toISOString();
 }
 Model.config = (params) => {
   if(Utils.isFunction(params.disposeDateFormat)){
-    Model.disposeDateFormat = params.disposeDateFormat();
+    Model.disposeDateFormat = params.disposeDateFormat;
   }
 }
 module.exports =  Model;

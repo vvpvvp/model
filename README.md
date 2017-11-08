@@ -8,7 +8,7 @@ npm install js-model
 ```
 
 ## Recommend
-- [momentjs](https://www.npmjs.com/package/momentjs): Date Format Plugin
+- [manba](https://www.npmjs.com/package/manba): Date Format Plugin
 
 ## Model
 
@@ -66,6 +66,20 @@ npm install js-model
   Model.Y // money billion 亿
 ```
 ## Code
+
+**manba-config.js**
+
+```javascript
+import Model from 'js-model';
+
+//重新定义dispose时日期转换的格式
+//默认为8时区的ISO日期格式，例：2016-04-19T00:00:00+08:00
+Model.config({
+  disposeDateFormat(date) {
+    return manba(date).time();
+  }
+})
+```
 
 **format.js**
 ```javascript
