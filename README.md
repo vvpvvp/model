@@ -1,5 +1,5 @@
-# Model
-Model for javascript
+# model
+model for javascript
 
 ## Install
 ### npm install
