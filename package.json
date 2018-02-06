@@ -1,6 +1,6 @@
 {
   "name": "js-model",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "model for javascript",
   "main": "build/model.js",
   "repository": {
