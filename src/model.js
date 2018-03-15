@@ -272,9 +272,9 @@ Model.QW = TYPE.QW;
 Model.Y = TYPE.Y;
 
 Model.disposeDateFormat = (str, format) => {
-  if(format) {
-    return manba(str, format).toISOString();
-  }
+  // if(format) {
+  //   return manba(str, format).toISOString();
+  // }
   return manba(str).toISOString();
 }
 Model.config = (params) => {
