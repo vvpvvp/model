@@ -150,7 +150,7 @@ function parseObject(data, model, param, parent) {
     } else if (param.isParse) {
       outData = manba(data).format(model.format || '');
     } else {
-      outData = Model.disposeDateFormat(data);
+      outData = Model.disposeDateFormat(data, model.format);
     }
     break;
   case TYPE.BOOLEAN:
@@ -271,7 +271,10 @@ Model.BW = TYPE.BW;
 Model.QW = TYPE.QW;
 Model.Y = TYPE.Y;
 
-Model.disposeDateFormat = (str) => {
+Model.disposeDateFormat = (str, format) => {
+  if(format) {
+    return manba(str, format).toISOString();
+  }
   return manba(str).toISOString();
 }
 Model.config = (params) => {
