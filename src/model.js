@@ -72,8 +72,11 @@ function parseObject(data, model, param, parent) {
   if ((!param.isParse) && Utils.isFunction(model.computed)) {
     return model.computed.call(null, parent);
   }
+  if (!param.isParse && Utils.isFunction(model.dispose)) {
+    return model.dispose.call(null, parent);
+  }
   if (param.isParse && Utils.isFunction(model.parse)) {
-    return model.parse.call(null, data);
+    return model.parse.call(null, parent);
   }
   if (data === undefined || data === null) {
     if (model.type == TYPE.ARRAY && param.isParse) {
@@ -272,9 +275,6 @@ Model.QW = TYPE.QW;
 Model.Y = TYPE.Y;
 
 Model.disposeDateFormat = (str, format) => {
-  // if(format) {
-  //   return manba(str, format).toISOString();
-  // }
   return manba(str).toISOString();
 }
 Model.config = (params) => {
