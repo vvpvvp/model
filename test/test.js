@@ -144,6 +144,28 @@ var expect = require('chai').expect;
 
     });
 
+    let Test2 = new Model({
+      money: {
+        type: Number,
+        unit: Model.Q
+      }
+    });
+
+    it('parseMoney', function () {
+      expect(Test2.parse({
+        money: 32209.99
+      })).to.be.deep.equal({
+        money: 32.20999
+      });
+    });
+
+    it('disposeMoney', function () {
+      expect(Test2.dispose({
+        money: 32.200
+      })).to.be.deep.equal({
+        money: 32200
+      });
+    });
 
   });
 

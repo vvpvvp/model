@@ -138,9 +138,9 @@ function parseObject(data, model, param, parent) {
       outData = Number(data);
       if (model.unit) {
         if (param.isParse) {
-          outData = outData / model.unit, 3;
+          outData = Utils.div(outData, model.unit);
         } else {
-          outData = outData * model.unit;
+          outData = Utils.mul(outData, model.unit);
         }
       }
     }
