@@ -104,11 +104,15 @@ export default {
     return target;
   },
   add(arg1, arg2) {
-    let r1,r2; 
-    try{r1=arg1.toString().split(".")[1].length}catch(e){r1=0} 
-    try{r2=arg2.toString().split(".")[1].length}catch(e){r2=0} 
-    let m=Math.pow(10,Math.max(r1,r2));
-    return (arg1*m+arg2*m)/m;
+    let s1 = arg1.toString();
+    let s2 = arg2.toString();
+    let arg1Arr = s1.split(".");
+    let arg2Arr = s2.split(".");
+    let d1 = arg1Arr.length == 2 ? arg1Arr[1] : "";
+    let d2 = arg2Arr.length == 2 ? arg2Arr[1] : "";
+    let maxLen = Math.max(d1.length, d2.length);
+    let m = Math.pow(10, maxLen);
+    return Number(((s1 * m + s2 * m) / m).toFixed(maxLen));
   },
   sub(arg1, arg2) {
     return this.add(arg1, -arg2);
