@@ -1,6 +1,6 @@
 {
   "name": "js-model",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "model for javascript",
   "main": "build/model.js",
   "repository": {
@@ -30,6 +30,7 @@
     ]
   },
   "dependencies": {
+    "hey-utils": "^0.4.0",
     "manba": "^1.0.1"
   },
   "homepage": "https://github.com/vvpvvp/momentjs#readme",
