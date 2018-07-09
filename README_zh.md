@@ -65,7 +65,7 @@ let Basic = new Model({
     "id": 0,
     "source": {
         type: Date,
-        format: 'l'  // use manba date format, "l": "YYYY-MM-DD",
+        format: 'l'  // 使用manba日期格式化, "l": "YYYY-MM-DD",
     },
     "description": "",
     "tags": [ 0 ],
@@ -76,7 +76,7 @@ let Basic = new Model({
     },
     "salary": {
         type: Number,
-        unit: Model.Q //money thousand
+        unit: Model.Q //金额，千为单位
     }
 });
 export default Basic;
@@ -97,7 +97,7 @@ basicValue:
     "description": null,
     "tags": [],
     "companyId": null,
-    "rate": 0.8, // use default value
+    "rate": 0.8, // 使用定义的默认值
     "salary": null
 }
 ```
@@ -121,12 +121,12 @@ basicValue:
     "tags": [],
     "companyId": null,
     "rate": 0.1,
-    "salary": 10 //10000 conversion to a thousand units 
+    "salary": 10 //10000 转换为10千
 }
 ```
 
 #### dispose
-**Use1**: remove null property
+**Use1**: 删除空属性
 
 ``` javascript
 import Basic from './Basic.js'
@@ -141,7 +141,7 @@ let basicValue = Basic.dispose({
 });
 ```
 
-basicValue: Consistent with the values converted from parse
+basicValue: 转换日期与金额，字符串
 
 ``` javascript
 {
@@ -155,14 +155,14 @@ basicValue: Consistent with the values converted from parse
 ## Advanced
 
 **manba-config.js**
-The default is the ISO date format of the current time zone, for example: 2016-04-19T00:00:00+08:00
+默认的日期转换是使用当前时区的ISO日期格式, 比如: 2016-04-19T00:00:00+08:00
 ```javascript
 import Model from 'js-model';
 
-// Redefining the format of the date conversion
+// 重新定义日期转换
 Model.config({
   disposeDateFormat(date) {
-    // change to use timestamp
+    // 改成使用时间戳
     return manba(date).time();
   }
 })
