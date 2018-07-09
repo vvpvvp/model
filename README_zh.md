@@ -1,18 +1,14 @@
 # js-model
-Data model for javascript
+为javascript准备的数据模型工具
 
-## 中文文档
-[中文文档](https://github.com/vvpvvp/model/blob/master/README_zh.md)
-
-## Install
-### npm install
+## 安装
+### npm安装
 ```sh
 npm install js-model --save
 ```
-
 ## Model
 
-### Column Define:
+### 字段定义:
 - **String**: "" || String
 - **Number**: 0 || Number
 - **Date**: Date
@@ -23,16 +19,13 @@ npm install js-model --save
 
 ```javascript
 {
-  // when use dispose data, remove empty array.
+  //dispose的时候移除空数组
   removeEmptyArray: false,
-  
-  // when use parse data, remove null value.
+  //parse的时候移除null数据
   removeNull: false,
-  
-  // when use dispose data, remove null value from array.
+  //移除null数据从数组中
   removeNullFromArray: false,
-  
-  // when use parse data, remove null value from object.
+  //从子对象中移除空对象
   removeEmptyObject: true,
 }
 ```
@@ -50,21 +43,19 @@ npm install js-model --save
   Model.Y // money billion 亿
 ```
 
-### Methods
+### 方法
 
 - **parse**:   
-    * **Fill property**: Creating a complete object data,  allows you to get rid of the boredom of {{a&&a.b&&a.c a.b.c:''}}
-    * **Data conversion**: Data standardization conversion, when data is transferred from the background, the date is a timestamp, the amount is in unit, parse method is to help you convert time stamp to time string, the amount is converted in a certain unit, and also can help you to complete all the fields.
-    * **Default value**: define default value
+    * 创建完整对象数据，让你摆脱{{a&&a.b&&a.c?a.b.c:''}}这种无聊的判断了
+    * 数据标准化转换，当数据从后台传输过来的时候，日期是时间戳，金额是以元为单位，parse方法是帮你转换时间戳至时间字符串，金额以一定单位转换好，并且可以帮助你补全好所有的字段。  
 
 - **dispose**:  
-    * When you need to transfer the data to the background, convert the date into a timestamp, convert the amount to the amount in the unit, standardize the data format, and delete the empty data.
+    * 当你需要把数据传送至后台之前，把日期转换成时间戳，把金额转换为以元为单位的数额，标准化数据格式，删除为空的数据。
 
     
-    Example: the value modified by input is String, and is converted to digital format through dispose.
+    例：通过input修改的数值为String, 通过dispose转换成数字格式。
 
-
-## Model Samples
+## Model 样例
 
 **Basic.js**
 ``` javascript
@@ -337,9 +328,9 @@ let user = User.dispose({
 }
 ```
 
+## 相关推荐
+- [manba](https://www.npmjs.com/package/manba): 日期格式化工具
+- [heyui](https://www.npmjs.com/package/heyui): HeyUI组件库
 
-## Recommend
-- [manba](https://www.npmjs.com/package/manba): Date Format Plugin
-- [heyui](https://www.npmjs.com/package/heyui): HeyUI component library
 
 

@@ -132,6 +132,6 @@ export default {
     try { t2 = arg2.toString().split(".")[1].length } catch (e) {}
     let r1 = Number(arg1.toString().replace(".", ""));
     let r2 = Number(arg2.toString().replace(".", ""));
-    return (r1 / r2) * Math.pow(10, t2 - t1);
+    return this.mul((r1 / r2) , Math.pow(10, t2 - t1));
   }
 };

@@ -1,11 +1,11 @@
 import Utils from './utils';
 const TYPE = {
-  STRING: Symbol('string'),
-  DATE: Symbol('date'),
-  NUMBER: Symbol('number'),
-  BOOLEAN: Symbol('boolean'),
-  OBJECT: Symbol('object'),
-  ARRAY: Symbol('array'),
+  STRING: String,
+  DATE: Date,
+  NUMBER: Number,
+  BOOLEAN: Boolean,
+  OBJECT: Object,
+  ARRAY: Array,
   isType(date) {
     return date === this.STRING ||
       date === this.DATE ||
