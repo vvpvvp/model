@@ -154,7 +154,7 @@ basicValue: 转换日期与金额，字符串
 
 ## Advanced
 
-**manba-config.js**
+**manba-config.js**  
 默认的日期转换是使用当前时区的ISO日期格式, 比如: 2016-04-19T00:00:00+08:00
 ```javascript
 import Model from 'js-model';
