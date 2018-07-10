@@ -53,7 +53,7 @@ npm install js-model --save
 ### Methods
 
 - **parse**:   
-    * **Fill property**: Creating a complete object data,  allows you to get rid of the boredom of {{a&&a.b&&a.c a.b.c:''}}
+    * **Fill property**: Creating a complete object data,  allows you to get rid of the boredom of {{a&&a.b?a.b.c:''}}
     * **Data conversion**: Data standardization conversion, when data is transferred from the background, the date is a timestamp, the amount is in unit, parse method is to help you convert time stamp to time string, the amount is converted in a certain unit, and also can help you to complete all the fields.
     * **Default value**: define default value
 
