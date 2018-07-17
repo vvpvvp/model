@@ -55,34 +55,35 @@ npm install js-model --save
     
     例：通过input修改的数值为String, 通过dispose转换成数字格式。
 
-## Model 样例
+## 基本
 
 **Basic.js**
 ``` javascript
 import Model from "js-model";
 
 let Basic = new Model({
-    "id": 0,
-    "source": {
+    id: 0,
+    source: {
         type: Date,
         format: 'l'  // 使用manba日期格式化, "l": "YYYY-MM-DD",
     },
-    "description": "",
-    "tags": [ 0 ],
-    "companyId": "",
-    "rate": {
+    description: "",
+    tags: [ 0 ],
+    companyId: "",
+    rate: {
     	type: Number,
-    	default: 0.8
+    	default: 0.8  // 使用默认值，只对 String, Number, Date 类型的值有效。
     },
-    "salary": {
+    salary: {
         type: Number,
-        unit: Model.Q //金额，千为单位
+        unit: Model.Q // 金额转换，此处单位为 千
     }
 });
 export default Basic;
+
 ```
-#### parse
-**Use1**: fill property
+### parse
+**Usage 1**: 补充字段
 
 ``` javascript
 import Basic from './Basic.js'
@@ -92,17 +93,17 @@ let basicValue = Basic.parse({});
 basicValue: 
 ``` javascript
 {
-    "id": null,
-    "source": null,
-    "description": null,
-    "tags": [],
-    "companyId": null,
-    "rate": 0.8, // 使用定义的默认值
-    "salary": null
+    id: null,
+    source: null,
+    description: null,
+    tags: [],
+    companyId: null,
+    rate: 0.8, // use default value
+    salary: null
 }
 ```
 
-**Use2**: conversion amount and date
+**Usage 2**: 转换金额与日期
 ``` javascript
 import Basic from './Basic.js'
 let basicValue = Basic.parse({
@@ -112,36 +113,36 @@ let basicValue = Basic.parse({
 });
 ```
 
-basicValue: 
+**result**: 
 ``` javascript
 {
-    "id": null,
-    "source": "2017-06-09",
-    "description": null,
-    "tags": [],
-    "companyId": null,
-    "rate": 0.1,
-    "salary": 10 //10000 转换为10千
+    id: null,
+    source: "2017-06-09",  //
+    description: null,
+    tags: [],
+    companyId: null,
+    rate: 0.1,
+    salary: 10 //10000 conversion to a thousand units 
 }
 ```
 
-#### dispose
-**Use1**: 删除空属性
+### dispose
+**Usage 1**: 删除null值的属性，并转换金额与日期
 
 ``` javascript
 import Basic from './Basic.js'
 let basicValue = Basic.dispose({
-	"id": null,
-	"source": "2017-06-09",
-	"description": null,
-	"tags": [],
-	"companyId": null,
-	"rate": "0.1",
-	"salary": 10
+	id: null,
+	source: "2017-06-09",
+	description: null,
+	tags: [],
+	companyId: null,
+	rate: "0.1",
+	salary: 10
 });
 ```
 
-basicValue: 转换日期与金额，字符串
+**result**: 与从parse的值一致
 
 ``` javascript
 {
@@ -152,113 +153,51 @@ basicValue: 转换日期与金额，字符串
 ```
 
 
-## Advanced
+## 进阶
 
-**manba-config.js**  
-默认的日期转换是使用当前时区的ISO日期格式, 比如: 2016-04-19T00:00:00+08:00
-```javascript
-import Model from 'js-model';
-
-// 重新定义日期转换
-Model.config({
-  disposeDateFormat(date) {
-    // 改成使用时间戳
-    return manba(date).time();
-  }
-})
-```
-
-**format.js**
 ```javascript
 
-// manba
-// "l": "YYYY-MM-DD",
-// "ll": "YYYY年MM月DD日",
-// "k": "YYYY-MM-DD hh:mm",
-const FORMAT = {
-    DAY: "l",
-    LL: "ll",
-    MINUTE: "k",
-    MONTH: 'YYYY-MM'
-}
-export default FORMAT;
-```
+// Basic.js
 
-
-**Basic.js**
-```javascript
-import FORMAT from "./format";
-import Model from "js-model";
 let Basic = new Model({
-    "source": {
-        type: Date,
-        format: FORMAT.DAY
-    },
-    "description": '',
-    "tags": [
-        0
-    ],
-    "companyId": "",
-    "rate": 0,
-    "salary": {
-        type: Number,
-        unit: Model.Q
-    },
-    "id": 0
+    id: 0,
+    companyId: "",
+    rate: 0
 });
 export default Basic;
-```
 
-**Edu.js**
-```javascript
+
+// Edu.js
+
 let Edu = new Model({
-    "startTime": {
-        type: Date,
-        format: FORMAT.MINUTE
-    },
-    "endTime": {
-        type: Date,
-        format: FORMAT.MINUTE
-    },
-    "degree": 0,
-    "major": "",
-    "school": "",
-    "takeTime": "",
-    "id": ""
+    id: 0,
+    major: "",
+    school: ""
 });
 export default Edu;
-```
 
-**User.js**
-```javascript
-import Model from "js-model";
+
+// User.js
+
 import Edu from "./Edu";
 import Basic from "./Basic";
 let User = new Model({
-    "basic": Basic,
-    "edu": [Edu]
+    basic: Basic,
+    edu: [Edu]
 });
 export default User;
+
 ```
 
-
-**parse**
+### parse
 ```javascript
 import User from './User'
 let user = User.parse({
     basic:{
-        id:123123,
-        source: 1461024000000,
-        tags:[
-            "123", "132"
-        ],
-        description:"abcdefg",
-        salary:100000
+        id:123123
     },
     edu:[{
-        "startTime": 1461073560000,
-        "takeTime": "",
-        "id": ""
+        id: 12
     }],
 })
 ```
@@ -267,45 +206,33 @@ let user = User.parse({
 ```javascript
 {   
     basic: {
-        companyId: null
-        description: "abcdefg"
-        id: 123123
+        id: 123123,
+        companyId: null,
         rate: null
-        salary: 100
-        source: "2016-04-19",
-        tags: [123, 132]
     },
-    edu: [
-        {
-            degree: null
-            endTime: null
-            id: null
-            major: null
-            school: null
-            startTime: "2016-04-19 21:46"
-            takeTime: null
-        }
-    ]
+    edu: [{
+        id: 12,
+        school: null
+        major: null,
+    }]
 }
 ```
 
-**dispose**
+### dispose
+
 ``` javascript
 import User from './User'
 
 let user = User.dispose({
     basic:{
         id:123123,
-        source: "2017-06-09",
-        tags:[
-            123,132
-        ],
-        description:"abcdefg",
-        salary:100000
+        companyId: 123,
+        rate: null
     },
     edu:[{
-        "startTime": "2017-06-10 08:00",
-        "id": ""
+        id: 12,
+        school: "school"
+        major: null,
     }],
 })
 ```
@@ -314,18 +241,68 @@ let user = User.dispose({
 ```javascript
 {   
     basic: {
-        description: "abcdefg"
-        id: 123123
-        salary: 100000000
-        source: 1496966400000
-        tags: [123, 132]
+        id:123123,
+        companyId: 123,
     },
-    edu: [
-        {
-            startTime: 1497052800000
-        }
-    ]
+    edu: [{
+        id: 12,
+        school: "school"
+    }]
 }
+```
+
+## 继承
+
+``` javascript
+
+class InfoModel extends Model {
+  parse(data) {
+    let  b = super.parse(data);
+    if(b.imgUrls.type.length == 0) {
+       b.imgUrls.type.push('http://*****')
+    }
+    return b;
+  }
+
+  dispose(data, param) {
+     return super.dispose(data, param)
+  }
+}
+
+const info = new InfoModel({
+  imgUrls: {
+    type: ['']
+  },
+});
+
+info.parse({})
+
+
+```
+
+**result**:
+```javascript
+{
+  imgUrls: {
+    type: ['http://*****']
+  },
+}
+```
+
+## 配置
+
+
+**manba-config.js**
+默认的日期转换是使用当前时区的ISO日期格式, 比如: 2016-04-19T00:00:00+08:00
+```javascript
+import Model from 'js-model';
+// Redefining the format of the date conversion
+Model.config({
+  disposeDateFormat(date) {
+    // change to use timestamp
+    return manba(date).time();
+  }
+})
 ```
 
 ## 相关推荐

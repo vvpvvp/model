@@ -64,34 +64,35 @@ npm install js-model --save
     Example: the value modified by input is String, and is converted to digital format through dispose.
 
 
-## Model Samples
+## Basic
 
 **Basic.js**
 ``` javascript
 import Model from "js-model";
 
 let Basic = new Model({
-    "id": 0,
-    "source": {
+    id: 0,
+    source: {
         type: Date,
         format: 'l'  // use manba date format, "l": "YYYY-MM-DD",
     },
-    "description": "",
-    "tags": [ 0 ],
-    "companyId": "",
-    "rate": {
+    description: "",
+    tags: [ 0 ],
+    companyId: "",
+    rate: {
     	type: Number,
-    	default: 0.8
+    	default: 0.8  // use default value, only effective for String, Number, Date
     },
-    "salary": {
+    salary: {
         type: Number,
-        unit: Model.Q //money thousand
+        unit: Model.Q // money transfor, a unit of 1000
     }
 });
 export default Basic;
+
 ```
-#### parse
-**Use1**: fill property
+### parse
+**Usage 1**: fill property
 
 ``` javascript
 import Basic from './Basic.js'
@@ -101,17 +102,17 @@ let basicValue = Basic.parse({});
 basicValue: 
 ``` javascript
 {
-    "id": null,
-    "source": null,
-    "description": null,
-    "tags": [],
-    "companyId": null,
-    "rate": 0.8, // use default value
-    "salary": null
+    id: null,
+    source: null,
+    description: null,
+    tags: [],
+    companyId: null,
+    rate: 0.8, // use default value
+    salary: null
 }
 ```
 
-**Use2**: conversion amount and date
+**Usage 2**: conversion amount and date
 ``` javascript
 import Basic from './Basic.js'
 let basicValue = Basic.parse({
@@ -124,29 +125,29 @@ let basicValue = Basic.parse({
 basicValue: 
 ``` javascript
 {
-    "id": null,
-    "source": "2017-06-09",
-    "description": null,
-    "tags": [],
-    "companyId": null,
-    "rate": 0.1,
-    "salary": 10 //10000 conversion to a thousand units 
+    id: null,
+    source: "2017-06-09",  //
+    description: null,
+    tags: [],
+    companyId: null,
+    rate: 0.1,
+    salary: 10 //10000 conversion to a thousand units 
 }
 ```
 
-#### dispose
-**Use1**: remove null property
+### dispose
+**Usage 1**: remove null property
 
 ``` javascript
 import Basic from './Basic.js'
 let basicValue = Basic.dispose({
-	"id": null,
-	"source": "2017-06-09",
-	"description": null,
-	"tags": [],
-	"companyId": null,
-	"rate": "0.1",
-	"salary": 10
+	id: null,
+	source: "2017-06-09",
+	description: null,
+	tags: [],
+	companyId: null,
+	rate: "0.1",
+	salary: 10
 });
 ```
 
@@ -163,11 +164,147 @@ basicValue: Consistent with the values converted from parse
 
 ## Advanced
 
+```javascript
+
+// Basic.js
+
+let Basic = new Model({
+    id: 0,
+    companyId: "",
+    rate: 0
+});
+export default Basic;
+
+
+// Edu.js
+
+let Edu = new Model({
+    id: 0,
+    major: "",
+    school: ""
+});
+export default Edu;
+
+
+// User.js
+
+import Edu from "./Edu";
+import Basic from "./Basic";
+let User = new Model({
+    basic: Basic,
+    edu: [Edu]
+});
+export default User;
+
+```
+
+### parse
+```javascript
+import User from './User'
+let user = User.parse({
+    basic:{
+        id:123123
+    },
+    edu:[{
+        id: 12
+    }],
+})
+```
+
+**result**:
+```javascript
+{   
+    basic: {
+        id: 123123,
+        companyId: null,
+        rate: null
+    },
+    edu: [{
+        id: 12,
+        school: null
+        major: null,
+    }]
+}
+```
+
+### dispose
+
+``` javascript
+import User from './User'
+
+let user = User.dispose({
+    basic:{
+        id:123123,
+        companyId: 123,
+        rate: null
+    },
+    edu:[{
+        id: 12,
+        school: "school"
+        major: null,
+    }],
+})
+```
+
+**result**:
+```javascript
+{   
+    basic: {
+        id:123123,
+        companyId: 123,
+    },
+    edu: [{
+        id: 12,
+        school: "school"
+    }]
+}
+```
+
+## Extend
+
+``` javascript
+
+class InfoModel extends Model {
+  parse(data) {
+    let  b = super.parse(data);
+    if(b.imgUrls.type.length == 0) {
+       b.imgUrls.type.push('http://*****')
+    }
+    return b;
+  }
+
+  dispose(data, param) {
+     return super.dispose(data, param)
+  }
+}
+
+const info = new InfoModel({
+  imgUrls: {
+    type: ['']
+  },
+});
+
+info.parse({})
+
+
+```
+
+**result**:
+```javascript
+{
+  imgUrls: {
+    type: ['http://*****']
+  },
+}
+```
+
+## Config
+
+
 **manba-config.js**
 The default is the ISO date format of the current time zone, for example: 2016-04-19T00:00:00+08:00
 ```javascript
 import Model from 'js-model';
-
 // Redefining the format of the date conversion
 Model.config({
   disposeDateFormat(date) {
@@ -177,169 +314,9 @@ Model.config({
 })
 ```
 
-**format.js**
-```javascript
-
-// manba
-// "l": "YYYY-MM-DD",
-// "ll": "YYYY年MM月DD日",
-// "k": "YYYY-MM-DD hh:mm",
-const FORMAT = {
-    DAY: "l",
-    LL: "ll",
-    MINUTE: "k",
-    MONTH: 'YYYY-MM'
-}
-export default FORMAT;
-```
-
-
-**Basic.js**
-```javascript
-import FORMAT from "./format";
-import Model from "js-model";
-let Basic = new Model({
-    "source": {
-        type: Date,
-        format: FORMAT.DAY
-    },
-    "description": '',
-    "tags": [
-        0
-    ],
-    "companyId": "",
-    "rate": 0,
-    "salary": {
-        type: Number,
-        unit: Model.Q
-    },
-    "id": 0
-});
-export default Basic;
-```
-
-**Edu.js**
-```javascript
-let Edu = new Model({
-    "startTime": {
-        type: Date,
-        format: FORMAT.MINUTE
-    },
-    "endTime": {
-        type: Date,
-        format: FORMAT.MINUTE
-    },
-    "degree": 0,
-    "major": "",
-    "school": "",
-    "takeTime": "",
-    "id": ""
-});
-export default Edu;
-```
-
-**User.js**
-```javascript
-import Model from "js-model";
-import Edu from "./Edu";
-import Basic from "./Basic";
-let User = new Model({
-    "basic": Basic,
-    "edu": [Edu]
-});
-export default User;
-```
-
-
-**parse**
-```javascript
-import User from './User'
-let user = User.parse({
-    basic:{
-        id:123123,
-        source: 1461024000000,
-        tags:[
-            "123", "132"
-        ],
-        description:"abcdefg",
-        salary:100000
-    },
-    edu:[{
-        "startTime": 1461073560000,
-        "takeTime": "",
-        "id": ""
-    }],
-})
-```
-
-**result**:
-```javascript
-{   
-    basic: {
-        companyId: null
-        description: "abcdefg"
-        id: 123123
-        rate: null
-        salary: 100
-        source: "2016-04-19",
-        tags: [123, 132]
-    },
-    edu: [
-        {
-            degree: null
-            endTime: null
-            id: null
-            major: null
-            school: null
-            startTime: "2016-04-19 21:46"
-            takeTime: null
-        }
-    ]
-}
-```
-
-**dispose**
-``` javascript
-import User from './User'
-
-let user = User.dispose({
-    basic:{
-        id:123123,
-        source: "2017-06-09",
-        tags:[
-            123,132
-        ],
-        description:"abcdefg",
-        salary:100000
-    },
-    edu:[{
-        "startTime": "2017-06-10 08:00",
-        "id": ""
-    }],
-})
-```
-
-**result**:
-```javascript
-{   
-    basic: {
-        description: "abcdefg"
-        id: 123123
-        salary: 100000000
-        source: 1496966400000
-        tags: [123, 132]
-    },
-    edu: [
-        {
-            startTime: 1497052800000
-        }
-    ]
-}
-```
-
 
 ## Recommend
-- [manba](https://www.npmjs.com/package/manba): Date Format Plugin
-- [heyui](https://www.npmjs.com/package/heyui): HeyUI component library
+- [manba](https://www.npmjs.com/package/manba): Date Format
+- [heyui](https://www.npmjs.com/package/heyui): 🎉UI Toolkit for Web, Vue2.0
 
 
