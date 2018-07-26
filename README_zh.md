@@ -262,10 +262,10 @@ const info = new InfoModel({
   salary: {
     type: Number,
     parse(data) {
-        return data / 1000
+        return data.salary / 1000
     },
     dispose(data) {
-        return data * 1000
+        return data.salary * 1000
     }
   },
 
