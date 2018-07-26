@@ -251,7 +251,36 @@ let user = User.dispose({
 }
 ```
 
-## 继承
+## 扩展
+
+### 单独编写display和dispose
+
+
+``` javascript
+
+const info = new InfoModel({
+  salary: {
+    type: Number,
+    parse(data) {
+        return data / 1000
+    },
+    dispose(data) {
+        return data * 1000
+    }
+  },
+
+});
+
+info.parse({salary: 10000})
+// {salary: 10}
+
+info.parse({salary: 20})
+// {salary: 20000}
+
+
+```
+
+### 继承Model 
 
 ``` javascript
 

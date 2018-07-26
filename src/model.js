@@ -19,7 +19,7 @@ function analysis(data) {
     if (data.length == 0) {
       return null;
     } else {
-      return analysisObject(data[0]);
+      return analysisObject(data[0], true);
     }
   } else {
     for (const i of Object.keys(data)) {
@@ -30,7 +30,7 @@ function analysis(data) {
   }
 }
 
-function analysisObject(n) {
+function analysisObject(n, objectInArray = false) {
   let outData = null;
   if (n instanceof Model) {
     outData = n;
@@ -40,9 +40,11 @@ function analysisObject(n) {
       value: analysis(n),
     }
   } else if (Utils.isObject(n)) {
+    let keys = Object.keys(n);
+    let isNotSettingKeys = keys.some(item=>['type', 'default', 'unit', 'format', 'parse', 'dispose', 'computed'].indexOf(item) == -1);
     let type = getStaticType(n.type);
     // 已配置规则
-    if (type) {
+    if (type && !isNotSettingKeys && !objectInArray) {
       outData = {};
       Object.assign(outData, n, {type});
     } else {
@@ -69,10 +71,11 @@ function parseObject(data, model, param, parent) {
     }
   }
   // isParse, parentData
-  if ((!param.isParse) && Utils.isFunction(model.computed)) {
+  if (param.isDispose && Utils.isFunction(model.computed)) {
     return model.computed.call(null, parent);
   }
-  if (!param.isParse && Utils.isFunction(model.dispose)) {
+  
+  if (param.isDispose && Utils.isFunction(model.dispose)) {
     return model.dispose.call(null, parent);
   }
   if (param.isParse && Utils.isFunction(model.parse)) {
@@ -173,7 +176,7 @@ function parseObject(data, model, param, parent) {
     outData = model.format.call(null, outData);
   }
   // dispose 的时候 如果为"",则输出null
-  if (!param.isParse && param.setEmptyNull && Utils.isString(outData) && outData == '') {
+  if (param.isDispose && param.setEmptyNull && Utils.isString(outData) && outData == '') {
     outData = null;
   }
   return outData;
@@ -213,15 +216,6 @@ const getStaticType = function(data) {
   if (TYPE.isType(data)) {
     return data;
   }
-  if (data === Number) {
-    return TYPE.NUMBER;
-  } else if (data === String) {
-    return TYPE.STRING;
-  } else if (data === Boolean) {
-    return TYPE.BOOLEAN;
-  } else if (data === Date) {
-    return TYPE.DATE;
-  }
   return false;
 }
 
@@ -229,14 +223,12 @@ const getType = function(data) {
   if (TYPE.isType(data)) {
     return data;
   }
-  if (Utils.isNumber(data) || data === Number) {
+  if (Utils.isNumber(data)) {
     return TYPE.NUMBER;
-  } else if (Utils.isString(data) || data === String) {
+  } else if (Utils.isString(data)) {
     return TYPE.STRING;
-  } else if (Utils.isBoolean(data) || data === Boolean) {
+  } else if (Utils.isBoolean(data)) {
     return TYPE.BOOLEAN;
-  } else if (data === Date) {
-    return TYPE.DATE;
   }
   return TYPE.STRING;
 }
@@ -248,11 +240,13 @@ class Model {
 
   parse(data, param = {}) {
     param.isParse = true;
+    param.isDispose = false;
     return _parse(data, this._model, Utils.extend({}, defaultParam, param));
   }
 
   dispose(data, param = {}) {
     param.isParse = false;
+    param.isDispose = true;
     return _parse(data, this._model, Utils.extend({}, defaultParam, param));
   }
 }

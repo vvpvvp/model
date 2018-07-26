@@ -55,7 +55,67 @@ var expect = require('chai').expect;
     "edu": [Edu]
   });
 
-  describe('model', function () {
+  describe('judge type object', function () {
+
+    let TypeModel = new Model({
+      type: String,
+      list: [{
+        type: Number,
+        default: true
+      }],
+      object: {
+        type: Boolean,
+        id: 0,
+      },
+      normal: {
+        type: Number
+      }
+    });
+
+    it('judge type object parse', function () {
+      expect(TypeModel.parse({list:[{}]})).to.be.deep.equal({
+        type: null,
+        list: [{
+          type: null,
+          default: null
+        }],
+        object: {
+          type: null,
+          id: null,
+        },
+        normal: null
+      });
+    });
+
+    it('judge type object dispose', function () {
+      expect(TypeModel.dispose({
+        type: 123,
+        list: [{
+          type: false,
+          default: "true"
+        }],
+        object: {
+          type: false,
+          id: "23"
+        },
+        normal: "123"
+      })).to.be.deep.equal({
+        type: "123",
+        list: [{
+          type: 0,
+          default: true
+        }],
+        object: {
+          type: false,
+          id: 23,
+        },
+        normal: 123
+      });
+    });
+
+  });
+
+  describe('basic model', function () {
 
 
     let value = User.parse({
@@ -68,6 +128,8 @@ var expect = require('chai').expect;
         rateFrom: 1
       }
     });
+
+
 
     it('parse full model', function () {
       expect(value).to.be.deep.equal({
@@ -164,6 +226,48 @@ var expect = require('chai').expect;
         money: 32.200
       })).to.be.deep.equal({
         money: 32200
+      });
+    });
+
+  });
+
+
+
+  describe('parse, dispose function', function () {
+
+    let pdModel = new Model({
+      parse: {
+        type: Number,
+        parse(data) {
+          return data.id + 1
+        }
+      },
+      dispose: {
+        type: Number,
+        parse(data) {
+          return data.dispose * 10
+        },
+        dispose(data) {
+          return data.dispose / 10
+        }
+      },
+      id: 0
+    });
+
+    it('judge type object parse', function () {
+      expect(pdModel.parse({id: 1, dispose: 10})).to.be.deep.equal({
+        parse: 2,
+        dispose: 100,
+        id: 1,
+      });
+    });
+
+    it('judge type object dispose', function () {
+      expect(pdModel.dispose({
+        id: 1, dispose: 10
+      })).to.be.deep.equal({
+        dispose: 1,
+        id: 1
       });
     });
 
