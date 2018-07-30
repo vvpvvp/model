@@ -19,7 +19,7 @@ function analysis(data) {
     if (data.length == 0) {
       return null;
     } else {
-      return analysisObject(data[0], true);
+      return analysisObject(data[0]);
     }
   } else {
     for (const i of Object.keys(data)) {
@@ -30,7 +30,7 @@ function analysis(data) {
   }
 }
 
-function analysisObject(n, objectInArray = false) {
+function analysisObject(n) {
   let outData = null;
   if (n instanceof Model) {
     outData = n;
@@ -44,7 +44,7 @@ function analysisObject(n, objectInArray = false) {
     let isNotSettingKeys = keys.some(item=>['type', 'default', 'unit', 'format', 'parse', 'dispose', 'computed'].indexOf(item) == -1);
     let type = getStaticType(n.type);
     // 已配置规则
-    if (type && !isNotSettingKeys && !objectInArray) {
+    if (type && !isNotSettingKeys) {
       outData = {};
       Object.assign(outData, n, {type});
     } else {

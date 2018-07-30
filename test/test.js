@@ -61,7 +61,7 @@ var expect = require('chai').expect;
       type: String,
       list: [{
         type: Number,
-        default: true
+        default: 1
       }],
       object: {
         type: Boolean,
@@ -73,12 +73,9 @@ var expect = require('chai').expect;
     });
 
     it('judge type object parse', function () {
-      expect(TypeModel.parse({list:[{}]})).to.be.deep.equal({
+      expect(TypeModel.parse({list:["12"]})).to.be.deep.equal({
         type: null,
-        list: [{
-          type: null,
-          default: null
-        }],
+        list: [12],
         object: {
           type: null,
           id: null,
@@ -90,10 +87,7 @@ var expect = require('chai').expect;
     it('judge type object dispose', function () {
       expect(TypeModel.dispose({
         type: 123,
-        list: [{
-          type: false,
-          default: "true"
-        }],
+        list: ["12"],
         object: {
           type: false,
           id: "23"
@@ -101,10 +95,7 @@ var expect = require('chai').expect;
         normal: "123"
       })).to.be.deep.equal({
         type: "123",
-        list: [{
-          type: 0,
-          default: true
-        }],
+        list: [12],
         object: {
           type: false,
           id: 23,
