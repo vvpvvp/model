@@ -29,10 +29,10 @@ npm install js-model --save
   // when use parse data, remove null value.
   removeNull: false,
   
-  // when use dispose data, remove null value from array.
+  // remove null value from array.
   removeNullFromArray: false,
   
-  // when use parse data, remove null value from object.
+  // remove null value from object.
   removeEmptyObject: true,
 }
 ```
