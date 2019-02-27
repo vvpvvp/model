@@ -1,6 +1,6 @@
 {
   "name": "js-model",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "model for javascript",
   "main": "build/model.js",
   "repository": {
@@ -30,7 +30,7 @@
     ]
   },
   "dependencies": {
-    "manba": "^1.2.6"
+    "manba": "^1.2.8"
   },
   "homepage": "https://github.com/vvpvvp/model#readme",
   "readmeFilename": "README.md"
